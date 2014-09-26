@@ -1,0 +1,56 @@
+How-To
+======
+
+Install OS
+------------
+1.	Insert Ubuntu Server CD
+2.	Follow basic install screens
+	a.	Hostname = <Local Server Name>	e.g ST-SVR04
+3.	Create user administrator
+4.	Password of Passw0rd
+5.	Encrypt your home directory? Select No
+6.	Partitionaing method = Guided – use entire disk and set up LVM
+7.	Update Method of No Auto Updates
+8.	Choose OpenSSH on the software selection
+9.	Install the GRUB boot loader too master boot record? YES
+10.	Remove CD and Continue to restart and launch the server
+
+
+Configure OS
+------------
+1.	Login with username administrator
+2.	Enable the root account and set it a password
+	a.	sudo passwd root
+	b.	Provide the password of IG88H1r3d
+3.	Log out with the command Exit
+4.	Login with username root
+5.	Now to change the default OS Shell from Dash to Bash, to do this follow these steps:
+	a.	dpkg-reconfigure dash
+	b.	When asked to install Dash as shell select No
+6.	Finally we need to install base tools and utilities.
+	a.	Get server IP with ifconfig
+	b.	Connect to the server using Putty on the listed IP within ifconfig on port 22
+	c.	Log out the server screen (not Putty) with the command Exit
+
+
+Script Setup
+------------
+Get script from ……
+Save script to /usr/src/
+Make script executable with chmod +x snakesetup.sh
+
+
+Base Setup
+------------
+Launch setup script with ./snakesetup.sh
+Choose option a
+
+
+Phase 1 Setup
+------------
+If you are not in the snake setup menu launch it with ./snakesetup.sh
+Choose option b
+During the install MySQL will ask for a root password, enter 5n@keSpam
+During the install of Postfix when asked for type of mail setup choose Internet Site
+During the install of Postfix when asked for the systems mail name enter the External Server Name
+
