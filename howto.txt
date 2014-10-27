@@ -2,7 +2,7 @@ How-To
 ======
 
 Install OS
-------------
+-------------
 1.	Insert Ubuntu Server CD
 2.	Follow basic install screens
 	a.	Hostname = <Local Server Name>	e.g ST-SVR04
@@ -17,7 +17,7 @@ Install OS
 
 
 Configure OS
-------------
+-------------
 1.	Login with username administrator
 2.	Enable the root account and set it a password
 	a.	sudo passwd root
@@ -34,23 +34,71 @@ Configure OS
 
 
 Script Setup
-------------
-Get script from ……
-Save script to /usr/src/
-Make script executable with chmod +x snakesetup.sh
+-------------
+1. Get script from ……
+2. Save script to /usr/src/
+3. Make script executable with chmod +x snakesetup.sh
 
 
 Base Setup
-------------
-Launch setup script with ./snakesetup.sh
-Choose option a
+-------------
+1. Launch setup script with ./snakesetup.sh
+2. Choose option a
 
 
 Phase 1 Setup
-------------
-If you are not in the snake setup menu launch it with ./snakesetup.sh
-Choose option b
-During the install MySQL will ask for a root password, enter 5n@keSpam
-During the install of Postfix when asked for type of mail setup choose Internet Site
-During the install of Postfix when asked for the systems mail name enter the External Server Name
+-------------
+Note:		If you are not in the snake setup menu launch it with ./snakesetup.sh
 
+1. Choose option b
+2. During the install MySQL will ask for a root password, enter 5n@keSpam
+3. During the install of Postfix when asked for type of mail setup choose Internet Site
+4. During the install of Postfix when asked for the systems mail name enter the External Server Name
+
+
+Phase 2 Setup
+-------------
+Note:		If you are not in the snake setup menu launch it with ./snakesetup.sh
+
+1. Choose option c
+2.	Create the MySQL database on the server where you intend on storing the bayesian information
+	a.	mysql -u root –p															Press Enter
+	b.	create database sa_bayes;													Press Enter
+	c.	GRANT ALL ON sa_bayes.* TO sa_user@localhost IDENTIFIED BY 'sa_password';	Press Enter
+	d.	flush privileges;															Press Enter
+	e.	exit;																		Press Enter
+3.	Correct bayes SQL structure script
+	a.	Edit script with vi /usr/share/doc/spamassassin/sql/bayes_mysql.sql
+	b.	Enter vi edit mode by pressing I (Insert)
+	c.	Change the word TYPE to ENGINE in all statements of the script
+	d.	Press Esc to exit to command mode
+	e.	Save and quit vi with		:wq	(write then quit)
+4	Import the database structure by running the script with
+	mysql -u sa_user -p sa_bayes < /usr/share/doc/spamassassin/sql/bayes_mysql.sql
+5.	Install missing perl packages
+	a.	perl -MCPAN -e shell				Press Enter (Auto = YES, Mirrors = YES)
+	b.	install IP::Country::Fast			Press Enter
+	c.	install Encode::Detect				Press Enter
+	d.	install Crypt::OpenSSL::RSA			Press Enter
+	e.	exit								Press Enter
+
+
+Phase 3 Setup
+-------------
+Note:		If you are not in the snake setup menu launch it with ./snakesetup.sh
+
+1. Choose Option d
+2.	During the install you will be asked for some information that is listed in the above information panel. Summary is: -
+	i.	Webserver to configure manually (nginx)
+	ii.	Virtual Host name
+	iii.	Choose whether to configure mysql automatically (YES)
+	iv.	My Host
+	v.	Database administrator name/password
+	vi.	Baruwa username/password/dbname
+	vii.	RabbitMQ host/username/password
+	viii.	Admin user/password/email for Baruwa Web
+
+	
+Phase 4 Setup
+-------------
+Note:		If you are not in the snake setup menu launch it with ./snakesetup.sh

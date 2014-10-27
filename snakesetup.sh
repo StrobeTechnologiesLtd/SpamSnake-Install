@@ -28,16 +28,16 @@ version="1.0"							# Script Version
 # menu_main()				This displays the choices a user can pick
 # read_main()				This reads the choice from the main menu and calls the required procedure
 # install_base ()			Function to install base OS packages using APT
-# phase_1 ()				Phase 1 of setup that lunches may other functions in order
-# phase_2 ()				Phase 2 of setup that lunches may other functions in order
-# phase_3 ()				Phase 3 of setup that lunches may other functions in order
+# phase_1 ()				Phase 1 of setup that lunches many other functions in order
+# phase_2 ()				Phase 2 of setup that lunches many other functions in order
+# phase_3 ()				Phase 3 of setup that lunches many other functions in order
 # install_webmin ()			Function to install Webmin
 # install_dnsmasq ()		Function to install Dnsmasq
 # install_mysql ()			Function to install MySQL
 # install_postfix ()		Function to install Postfix
-# install_filters ()		All but Apparmour and DCC
+# install_filters ()		Function to install additional filters
 # install_mailscanner ()	Function to install MailScanner
-# install_spamassassin ()	Write
+# install_spamassassin ()	Write - DCC enabling & spam.assassin.prefs.conf editing
 # configure_mailscanner ()	Function that configures MailScanner
 # install_baruwa ()			Write
 
@@ -303,9 +303,8 @@ echo "We are now going to configure Apparmor"
 echo ""
 
 usermod -a -G www-data clamav
-#sed -i "  #include <abstractions/nameservice>/ a\#clamav" /etc/apparmor.d/usr.sbin.clamd
-#sed -i "#clamav/ a\   /var/spool/MailScanner/** rw," /etc/apparmor.d/usr.sbin.clamd
-#sed -i "   /var/spool/MailScanner/** rw,/ a\   /var/spool/MailScanner/incoming/** rw," /etc/apparmor.d/usr.sbin.clamd
+sed -i "#clamav/ a\   /var/spool/MailScanner/** rw," /etc/apparmor.d/usr.sbin.clamd
+sed -i "   /var/spool/MailScanner/** rw,/ a\   /var/spool/MailScanner/incoming/** rw," /etc/apparmor.d/usr.sbin.clamd
 /etc/init.d/apparmor reload
 
 echo ""
@@ -427,28 +426,77 @@ echo "--------------------------------------------------------------------------
 echo "	S P A M A S S A S S I N   P A C K A G E   I N S T A L L";
 echo "------------------------------------------------------------------------------";
 
-# **START** xxxxxxx
-echo "We are doing xxxxxxx."
+# **START** config backup
+echo "We are doing a backup of the configuration files."
 echo ""
 
-# Commands for x
+mv /etc/spamassassin/local.cf /etc/spamassassin/local.cf.disabled
+cp /opt/MailScanner/etc/spam.assassin.prefs.conf /opt/MailScanner/etc/spam.assassin.prefs.conf.back
 
 echo ""
-echo "Finished doing xxxxxxx."
+echo "Finished doing backup of the configuration files."
 sleep 2
-# **END** xxxxxxx
+# **END** config backup
 
-# **START** yyyyyyy
+# **START** Enabled DCC
 clear 2>/dev/null
-echo "We are doing yyyyyyy."
+echo "We are Enabling DCC Plugin."
+echo ""
+
+# commands for DCC
+
+echo ""
+echo "Finished Enabling DCC Plugin."
+sleep 2
+# **END** Enabled DCC
+
+# **START** Create required folders
+clear 2>/dev/null
+echo "We are creating required folders."
+echo ""
+
+mkdir /var/www
+mkdir /var/www/.spamassassin
+
+echo ""
+echo "Finished creating required folders."
+sleep 2
+# **END** Create required folders
+
+# **START** Update Spamassassin configuration
+clear 2>/dev/null
+echo "We are updating Spamassassin configurations."
 echo ""
 
 # commands for y
 
 echo ""
-echo "Finished doing yyyyyy."
+echo "Finished Spamassassin configurations."
 sleep 2
-# **END** yyyyyy
+# **END** Update Spamassassin configuration
+
+# **START** setting required permissions
+clear 2>/dev/null
+echo "We are setting the required permissions on folders."
+echo ""
+
+chown -R postfix:www-data /var/spool/postfix/hold
+chmod -R ug+rwx /var/spool/postfix/hold
+
+echo ""
+echo "Finished setting the required permissions on folders."
+sleep 2
+# **END** setting required permissions
+
+# **START** information about MySQL and Perl MCPAN
+clear 2>/dev/null
+echo "Please now read the documentation about creating the"
+echo "MySQL data base and importing the base structure."
+echo "Once this has been done please install the perl addins"
+echo "using the MCPAN instructions."
+echo ""
+sleep 8
+# **END** information about MySQL and Perl MCPAN
 
 echo ""
 echo "Spamassassin configured."
@@ -531,7 +579,7 @@ sed -i "/^Notice Signature =/ c\Notice Signature = -- \\nSpamSnake\\nEmail Virus
 sed -i "/^Notices From =/ c\Notices From = SpamSnake" /opt/MailScanner/etc/MailScanner.conf
 sed -i "/^Spam List Definitions =/ c\Spam List Definitions = %etc-dir%/spam.lists.conf" /opt/MailScanner/etc/MailScanner.conf
 sed -i "/^Spam Checks =/ c\Spam Checks = yes" /opt/MailScanner/etc/MailScanner.conf
-sed -i "/^Spam List =/ c\Spam List = spamhaus-ZEN spamcop.net PSBL SORBS-DNSBL" /opt/MailScanner/etc/MailScanner.conf
+sed -i "/^Spam List =/ c\Spam List = spamcop.net PSBL spamhaus-ZEN SORBS-HTTP SORBS-SOCKS SORBS-MISC SORBS-SMTP SORBS-WEB SORBS-BLOCK SORBS-ZOMBIE SORBS-DUL SORBS-RHSBL" /opt/MailScanner/etc/MailScanner.conf
 sed -i "/^Spam Domain List =/ c\Spam Domain List = SORBS-BADCONF SORBS-NOMAIL" /opt/MailScanner/etc/MailScanner.conf
 sed -i "/^Watermark Header =/ c\Watermark Header = X-%org-name%-SpamSnake-Watermark:" /opt/MailScanner/etc/MailScanner.conf
 # finish mailscanner.sh
@@ -908,6 +956,13 @@ install_postfix
 install_filters
 install_mailscanner
 
+clear 2>/dev/null
+echo "------------------------------------------------------------------------------";
+echo "	P H A S E   1";
+echo "------------------------------------------------------------------------------";
+echo "";
+echo "Please restart the Linux box and continue to Phase 2";
+
 sleep 8
 }
 
@@ -919,8 +974,7 @@ echo "--------------------------------------------------------------------------
 echo "	P H A S E   2";
 echo "------------------------------------------------------------------------------";
 
-configure_mailscanner
-install_baruwa
+install_spamassassin
 
 sleep 8
 }
@@ -933,7 +987,28 @@ echo "--------------------------------------------------------------------------
 echo "	P H A S E   3";
 echo "------------------------------------------------------------------------------";
 
+configure_mailscanner
+install_baruwa
+
+clear 2>/dev/null
+echo "------------------------------------------------------------------------------";
+echo "	P H A S E   3";
+echo "------------------------------------------------------------------------------";
+echo "";
+echo "Please restart the Linux box and continue to Phase 4";
+
+sleep 8
+}
+
+# Phase 4
+function phase_4 () {
+clear 2>/dev/null
+echo "------------------------------------------------------------------------------";
+echo "	P H A S E   4";
+echo "------------------------------------------------------------------------------";
+
 #configure_mailscanner
+#install_baruwa
 
 sleep 8
 }
@@ -954,10 +1029,10 @@ menu_main() {
 	echo ""
 	echo "a) Install Base OS Packages"
 	echo "b) Phase 1 Setup"
-	echo "c) Install Spamassassin"
-	echo "d) Phase 2 Setup"
-	#echo "e) Send PDF Reports"
-	#echo "f) Send Top Spammer List"
+	echo "c) Phase 2 Setup"
+	echo "d) Phase 3 Setup"
+	echo "e) Phase 4 Setup"
+	#echo "f) Phase 5 Setup"
 	#echo "g) Send Whitelist Data"
 	#echo "f) Update SpamAssassin Rules"
 	#echo "g) Update Search Index"
@@ -1003,10 +1078,10 @@ read_main() {
 	case $choice in
 		a) install_base ;;
 		b) phase_1 ;;
-		c) install_spamassassin ;;
-		d) phase_2 ;;
-		e) send_pdf_reports ;;
-		f) update_sa_rules ;;
+		c) phase_2 ;;
+		d) phase_3 ;;
+		e) phase_4 ;;
+		f) phase_5 ;;
 		g) update_search_index ;;
 		z) launch_advanced ;;
 		x) exit 0 ;;
