@@ -97,14 +97,7 @@ Note:		If you are not in the snake setup menu launch it with ./snakesetup.sh
 	vi.	Baruwa username/password/dbname
 	vii.	RabbitMQ host/username/password
 	viii.	Admin user/password/email for Baruwa Web
-
-	
-Phase 4 Setup
--------------
-Note:		If you are not in the snake setup menu launch it with ./snakesetup.sh
-
-1.	Choose Option ???
-2.	After run do the following: -
+3.	After run do the following: -
 edit file /etc/init.d/mailscanner
 
 ----
@@ -125,3 +118,10 @@ baruwa-admin initconfig
 baruwa-admin createsuperuser
 
 Now Reboot server
+
+	
+Phase 4 Setup
+-------------
+Note:		If you are not in the snake setup menu launch it with ./snakesetup.sh
+
+1.	Choose Option ???
