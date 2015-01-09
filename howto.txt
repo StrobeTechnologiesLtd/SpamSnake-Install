@@ -60,7 +60,7 @@ Phase 2 Setup
 -------------
 Note:		If you are not in the snake setup menu launch it with ./snakesetup.sh
 
-1. Choose option c
+1.	Choose option c
 2.	Create the MySQL database on the server where you intend on storing the bayesian information
 	a.	mysql -u root –p															Press Enter
 	b.	create database sa_bayes;													Press Enter
@@ -87,7 +87,7 @@ Phase 3 Setup
 -------------
 Note:		If you are not in the snake setup menu launch it with ./snakesetup.sh
 
-1. Choose Option d
+1.	Choose Option d
 2.	During the install you will be asked for some information that is listed in the above information panel. Summary is: -
 	i.	Webserver to configure manually (nginx)
 	ii.	Virtual Host name
@@ -102,3 +102,26 @@ Note:		If you are not in the snake setup menu launch it with ./snakesetup.sh
 Phase 4 Setup
 -------------
 Note:		If you are not in the snake setup menu launch it with ./snakesetup.sh
+
+1.	Choose Option ???
+2.	After run do the following: -
+edit file /etc/init.d/mailscanner
+
+----
+CONFFILE=/etc/MailScanner/MailScanner.conf
+PIDFILE=/var/run/MailScanner/MailScanner.pid
+check_dir /var/spool/MailScanner ${user:-postfix} ${group:-celeryd}
+check_dir /var/lib/MailScanner ${user:-postfix} ${group:-celeryd}
+check_dir /var/run/MailScanner ${user:-postfix} ${group:-celeryd}
+check_dir /var/lock/subsys/MailScanner ${user:-postfix} ${group:-celeryd}
+start-stop-daemon --start --quiet --startas $STARTAS  --pidfile $PIDFILE --test > /dev/null \
+start-stop-daemon --start --quiet --nicelevel $run_nice --chuid postfix:celeryd --exec $DAEMON  --pidfile "$PIDFILE" -- $DAEMON_ARGS \
+start-stop-daemon --stop --retry=TERM/30 --pidfile $PIDFILE
+start-stop-daemon --stop --signal 1 --quiet --pidfile $PIDFILE
+
+----
+
+baruwa-admin initconfig
+baruwa-admin createsuperuser
+
+Now Reboot server

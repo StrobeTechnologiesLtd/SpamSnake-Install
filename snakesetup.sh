@@ -529,7 +529,7 @@ sleep 8
 }
 
 
-# MailScanner Package Configuration
+# MailScanner Package Configuration #NEEDS FIXING
 function configure_mailscanner () {
 clear 2>/dev/null
 echo "------------------------------------------------------------------------------";
@@ -565,9 +565,9 @@ read -p "website: " WEBSITE
 echo ""
 
 # Replaces the old mailscanner.sh
-sed -i "/^%org-name% =/ c\%org-name% =\$ORGNAME" /opt/MailScanner/etc/MailScanner.conf
-sed -i "/^%org-long-name% =/ c\%org-long-name% = \$LONGORGNAME" /opt/MailScanner/etc/MailScanner.conf
-sed -i "/^%web-site% =/ c\%web-site% = \$WEBSITE" /opt/MailScanner/etc/MailScanner.conf
+sed -i "/^%org-name% =/ c\%org-name% =\${ORGNAME}" /opt/MailScanner/etc/MailScanner.conf
+sed -i "/^%org-long-name% =/ c\%org-long-name% = \${LONGORGNAME}" /opt/MailScanner/etc/MailScanner.conf
+sed -i "/^%web-site% =/ c\%web-site% = \${WEBSITE}" /opt/MailScanner/etc/MailScanner.conf
 sed -i "/^Run As User =/ c\Run As User = postfix" /opt/MailScanner/etc/MailScanner.conf
 sed -i "/^Run As Group =/ c\Run As Group = www-data" /opt/MailScanner/etc/MailScanner.conf
 sed -i "/^Incoming Work Group =/ c\Incoming Work Group = clamav" /opt/MailScanner/etc/MailScanner.conf
@@ -600,7 +600,7 @@ sed -i "/^Envelope To Header =/ c\Envelope To Header = X-%org-name%-SpamSnake-To
 sed -i "/^ID Header =/ c\ID Header = X-%org-name%-SpamSnake-ID:" /opt/MailScanner/etc/MailScanner.conf
 sed -i "/^IP Protocol Version Header =/ c\IP Protocol Version Header = # X-%org-name%-SpamSnake-IP-Protocol:" /opt/MailScanner/etc/MailScanner.conf
 sed -i "/^Hostname =/ c\Hostname = the %org-name% ($HOSTNAME) SpamSnake" /opt/MailScanner/etc/MailScanner.conf
-sed -i "/^Notice Signature =/ c\Notice Signature = -- \\nSpamSnake\\nEmail Virus Scanner\\nsecurity.strobe-it.co.uk" /opt/MailScanner/etc/MailScanner.conf
+#sed -i "/^Notice Signature =/ c\Notice Signature = -- \\nSpamSnake\\nEmail Virus Scanner\\nsecurity.strobe-it.co.uk" /opt/MailScanner/etc/MailScanner.conf
 sed -i "/^Notices From =/ c\Notices From = SpamSnake" /opt/MailScanner/etc/MailScanner.conf
 sed -i "/^Spam List Definitions =/ c\Spam List Definitions = %etc-dir%/spam.lists.conf" /opt/MailScanner/etc/MailScanner.conf
 sed -i "/^Spam Checks =/ c\Spam Checks = yes" /opt/MailScanner/etc/MailScanner.conf
@@ -661,11 +661,12 @@ echo "RBL List Created"
 sleep 2
 # **END** Creating RBL List
 
-# **START** MailScanner Startup Script
+# **START** MailScanner Startup Script   ---- ISSUES with this
 clear 2>/dev/null
 echo "Create MailScanner Startup Script"
 echo ""
 
+#----- This is where the issues are...
 cat > /etc/init.d/mailscanner <<EOF
 #! /bin/sh
    ### BEGIN INIT INFO
@@ -931,17 +932,55 @@ echo "Finished installing Baruwa."
 sleep 2
 # **END** Install Baruwa
 
-# **START** yyyyy
+# **START** Adding Additional Settings to Baruwa
 clear 2>/dev/null
-echo "We are doing yyyyyyy."
+echo "We are doing Adding Additional Settings to Baruwa."
 echo ""
 
-# commands for y
+echo "What is the URL to access your spam filter (example: http://spam.strobe-it.co.uk) ?"
+read -p "Spam URL: " SPAMURL
+echo ""
+echo "What is your Time Zone (example: Europe/London) ?"
+read -p "Time Zone: " TIMEZONE
+echo ""
+echo "What is the email address your spam report will be sent from (example: SpamSnake@strobe-it.co.uk) ?"
+read -p "Spam Report Email: " SPAMREPORTEMAIL
+echo ""
+
+sed -i "/^QUARANTINE_REPORT_HOSTURL =/ c\QUARANTINE_REPORT_HOSTURL = '\${SPAMURL}'" /etc/baruwa/settings.py
+sed -i "/^TIME_ZONE =/ c\TIME_ZONE = '\${TIMEZONE}'" /etc/baruwa/settings.py
+sed -i "/^#DEFAULT_FROM_EMAIL =/ c\DEFAULT_FROM_EMAIL = '\${SPAMREPORTEMAIL}'" /etc/baruwa/settings.py
+
+baruwa-admin syncdb --noinput
+baruwa-admin migrate baruwa.fixups
+baruwa-admin migrate baruwa.accounts
+baruwa-admin migrate baruwa.messages
+baruwa-admin migrate baruwa.lists
+baruwa-admin migrate baruwa.reports
+baruwa-admin migrate baruwa.status
+baruwa-admin migrate baruwa.config
+
+sed -i "/^Run As Group =/ c\Run As Group = celeryd" /etc/MailScanner/MailScanner.conf
+sed -i "/^Quarantine User =/ c\Quarantine User = celery" /etc/MailScanner/MailScanner.conf
+sed -i "/^Quarantine Group =/ c\Quarantine Group = celery" /etc/MailScanner/MailScanner.conf
+sed -i "/^Is Definitely Not Spam =/ c\Is Definitely Not Spam = &BaruwaWhitelist" /etc/MailScanner/MailScanner.conf
+sed -i "/^Is Definitely Spam =/ c\Is Definitely Spam = &BaruwaBlacklist" /etc/MailScanner/MailScanner.conf
+sed -i "/^Required SpamAssassin Score =/ c\Required SpamAssassin Score = &BaruwaLowScore" /etc/MailScanner/MailScanner.conf
+sed -i "/^High SpamAssassin Score =/ c\High SpamAssassin Score = &BaruwaHighScore" /etc/MailScanner/MailScanner.conf
+sed -i "/^Always Looked Up Last =/ c\Always Looked Up Last = &BaruwaSQL" /etc/MailScanner/MailScanner.conf
+sed -i "/^Quarantine User =/ c\Quarantine User = celeryd" /opt/MailScanner/etc/conf.d/baruwa.conf
+sed -i "/^Inline HTML Signature =/ c\#Inline HTML Signature = htmlsigs.customize" /opt/MailScanner/etc/conf.d/baruwa.conf
+sed -i "/^Inline Text Signature =/ c\#Inline Text Signature = textsigs.customize" /opt/MailScanner/etc/conf.d/baruwa.conf
+sed -i "/^Signature Image Filename =/ c\#Signature Image Filename = sigimgfiles.customize" /opt/MailScanner/etc/conf.d/baruwa.conf
+sed -i "/^Signature Image <img> Filename =/ c\#Signature Image <img> Filename = sigimgs.customize" /opt/MailScanner/etc/conf.d/baruwa.conf
+
+usermod -a -G celeryd clamav
+chgrp -R celeryd /var/spool/MailScanner/quarantine
 
 echo ""
-echo "Finished doing yyyyyy."
+echo "Finished doing Adding Additional Settings to Baruwa."
 echo ""
-# **END** yyyyy
+# **END** Adding Additional Settings to Baruwa
 
 echo ""
 echo "Baruwa Installed."
