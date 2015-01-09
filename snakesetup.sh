@@ -1081,6 +1081,42 @@ sleep 8
 }
 
 
+# SPF Package Install
+function install_SPF () {
+clear 2>/dev/null
+echo "------------------------------------------------------------------------------";
+echo "	S P F   P A C K A G E   I N S T A L L";
+echo "------------------------------------------------------------------------------";
+
+# **START** Install base software
+echo "We are installing base software."
+echo ""
+
+apt-get install postfix-policyd-spf-python -y
+
+echo ""
+echo "Finished installing base software."
+sleep 2
+# **END** Install base software
+
+# **START** Configure Postfix to use SPF
+echo "We are configuring Postfix"
+echo ""
+
+# Already configured earlier but needs a restart to work
+/etc/init.d/postfix restart
+
+echo ""
+echo "Finished configuring Postfix."
+sleep 2
+# **END** Configure Postfix to use SPF
+
+echo ""
+echo "SPF Package Installed."
+sleep 8
+}
+
+
 # Launch Advanced Menu
 function launch_advanced () {
 clear 2>/dev/null
@@ -1166,6 +1202,7 @@ echo "	P H A S E   4";
 echo "------------------------------------------------------------------------------";
 
 install_baruwaweb
+install_SPF
 
 sleep 8
 }
@@ -1219,6 +1256,7 @@ menu_advanced() {
 	echo "i) Configure MailScanner"
 	echo "j) Install Baruwa"
 	echo "k) Install Baruwa Webserver"
+	echo "l) Install SPF for Postfix"
 	echo " "
 	echo "y) Fix APT"
 	echo " "
@@ -1266,6 +1304,7 @@ read_advanced() {
 		i) configure_mailscanner ;;
 		j) install_baruwa ;;
 		k) install_baruwaweb ;;
+		l) install_SPF ;;
 		y) fix_apt ;;
 		x) exit 0 ;;
 		*) echo -e "Error \"$choice\" is not an option..." && sleep 2
