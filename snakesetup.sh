@@ -18,7 +18,7 @@
 # +---------------------------------------------------+
 
 date="09-01-2015"						# Last Updated On
-version="1.1"							# Script Version
+version="1.2"							# Script Version
 #binhome="/home/baruwa/px/bin/"			# Path to bin
 
 
@@ -40,7 +40,8 @@ version="1.1"							# Script Version
 # install_mailscanner ()	Function to install MailScanner
 # install_spamassassin ()	Write - DCC enabling & spam.assassin.prefs.conf editing
 # configure_mailscanner ()	Function that configures MailScanner
-# install_baruwa ()			Write
+# install_baruwa ()			Function that installs and configures Baruwa
+# install_baruwaweb ()		Function that installs the web servers and configures them for Baruwa
 
 
 # +---------------------------------------------------+
@@ -851,7 +852,7 @@ sleep 8
 }
 
 
-# Spamassassin Package Install
+# Baruwa Package Install
 function install_baruwa () {
 clear 2>/dev/null
 echo "------------------------------------------------------------------------------";
@@ -988,6 +989,98 @@ sleep 8
 }
 
 
+# Baruwa Webserver Install
+function install_baruwaweb () {
+clear 2>/dev/null
+echo "------------------------------------------------------------------------------";
+echo "	B A R U W A   W E B S E R V E R   I N S T A L L";
+echo "------------------------------------------------------------------------------";
+
+# **START** Install base software
+echo "We are installing base software."
+echo ""
+
+apt-get install nginx-full uwsgi uwsgi-plugin-python -y
+
+echo ""
+echo "Finished installing base software."
+sleep 2
+# **END** Install base software
+
+# **START** Create config files
+echo "We are creating config files."
+echo ""
+
+cat >> /etc/uwsgi/apps-available/baruwa.ini << EOF
+[uwsgi]
+workers = 2
+chdir = /usr/share/pyshared/baruwa
+env = DJANGO_SETTINGS_MODULE=baruwa.settings
+module = django.core.handlers.wsgi:WSGIHandler()
+EOF
+
+echo "What is your external server name (example: spam.strobe-it.co.uk) ?"
+read -p "External Server Name: " SERVERNAME
+echo ""
+cat >> /etc/nginx/sites-available/baruwa.conf << EOF
+server {
+listen 80;
+server_name ${SERVERNAME};
+root /usr/share/pyshared/baruwa;
+autoindex on;
+access_log /var/log/nginx/access.log;
+error_log /var/log/nginx/error.log;
+location /static {
+    root /usr/share/pyshared/baruwa/static/;
+    }
+    # static resources
+    location ~* ^.+\.(html|jpg|jpeg|gif|png|ico|css|zip|tgz|gz|rar|bz2|doc|xls|exe|pdf|ppt|txt|tar|mid|midi|wav|bmp|rtf|js)$
+    {
+      expires 30d;
+      break;
+    }
+location / {
+    uwsgi_pass unix:///var/run/uwsgi/app/baruwa/socket;
+    include uwsgi_params;
+    }
+}
+EOF
+
+echo ""
+echo "Finished creating config files."
+sleep 2
+# **END** Create config files
+
+# **START** Create Symlinks
+echo "We are creating all symlinks."
+echo ""
+
+ln -s /etc/nginx/sites-available/baruwa.conf /etc/nginx/sites-enabled/baruwa.conf
+ln -s /etc/uwsgi/apps-available/baruwa.ini /etc/uwsgi/apps-enabled/baruwa.ini
+rm -r /etc/nginx/sites-enabled/default
+cp /usr/share/doc/uwsgi-extra/nginx/uwsgi_params /etc/nginx/uwsgi_params
+
+/etc/init.d/uwsgi restart
+/etc/init.d/nginx restart
+
+ln -s /usr/share/pyshared/baruwa/manage.py /usr/bin/manage.py
+chmod +x /usr/bin/manage.py
+
+/etc/init.d/mailscanner stop
+/etc/init.d/mailscanner start
+
+
+echo ""
+echo "Finished creating all symlinks."
+sleep 2
+# **END** Create Symlinks
+
+echo ""
+echo "Baruwa Webserver Installed."
+sleep 8
+}
+
+
 # Launch Advanced Menu
 function launch_advanced () {
 clear 2>/dev/null
@@ -1072,8 +1165,7 @@ echo "--------------------------------------------------------------------------
 echo "	P H A S E   4";
 echo "------------------------------------------------------------------------------";
 
-#configure_mailscanner
-#install_baruwa
+install_baruwaweb
 
 sleep 8
 }
@@ -1126,6 +1218,7 @@ menu_advanced() {
 	echo "h) Install Spamassassin"
 	echo "i) Configure MailScanner"
 	echo "j) Install Baruwa"
+	echo "k) Install Baruwa Webserver"
 	echo " "
 	echo "y) Fix APT"
 	echo " "
@@ -1172,6 +1265,7 @@ read_advanced() {
 		h) install_spamassassin ;;
 		i) configure_mailscanner ;;
 		j) install_baruwa ;;
+		k) install_baruwaweb ;;
 		y) fix_apt ;;
 		x) exit 0 ;;
 		*) echo -e "Error \"$choice\" is not an option..." && sleep 2

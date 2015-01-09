@@ -124,4 +124,5 @@ Phase 4 Setup
 -------------
 Note:		If you are not in the snake setup menu launch it with ./snakesetup.sh
 
-1.	Choose Option ???
+1.	Choose Option k
+2.	During the install you will be asked for the external server name (eg. spam.strobe-it.co.uk)
