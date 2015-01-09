@@ -1,0 +1,26 @@
+We are not sure if this is the case as it looks like a hash error with APT
+
+
+Original Command:		apt-get install mysql-client mysql-server libdbd-mysql-perl -y
+New Command:			apt-get install mysql-client-core-5.5 mysql-server-core-5.5 libdbd-mysql-perl -y
+
+
+mysql-client
+------------
+http://www.ubuntuupdates.org/mysql-client
+Deleted for precise (12.04) 06/11/2012
+Latest Package		mysql-client-core-5.5
+
+
+mysql-server
+------------
+http://www.ubuntuupdates.org/mysql-server
+Deleted for "Precise (12.04)" 06/11/2012
+Latest Package		mysql-server-core-5.5
+
+
+libdbd-mysql-perl
+-----------------
+http://www.ubuntuupdates.org/libdbd-mysql-perl
+No issues listed with package
+Latest Package		libdbd-mysql-perl

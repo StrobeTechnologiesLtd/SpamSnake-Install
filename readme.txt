@@ -2,8 +2,8 @@ Strobe Technologies Ltd
 SpamSnake Installer
 =======================
 =======================
-Version:	V1.0
-Date:		26/09/2014
+Version:	V1.1
+Date:		09/01/2015
 Snake Ver:	V1.12.2.2
 =======================
 =======================

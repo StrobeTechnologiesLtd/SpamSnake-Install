@@ -17,8 +17,8 @@
 # Version Tracking
 # +---------------------------------------------------+
 
-date="22-09-2014"						# Last Updated On
-version="1.0"							# Script Version
+date="09-01-2015"						# Last Updated On
+version="1.1"							# Script Version
 #binhome="/home/baruwa/px/bin/"			# Path to bin
 
 
@@ -31,6 +31,7 @@ version="1.0"							# Script Version
 # phase_1 ()				Phase 1 of setup that lunches many other functions in order
 # phase_2 ()				Phase 2 of setup that lunches many other functions in order
 # phase_3 ()				Phase 3 of setup that lunches many other functions in order
+# fix_apt ()				Function to fix the problem with APT listing and installing packages
 # install_webmin ()			Function to install Webmin
 # install_dnsmasq ()		Function to install Dnsmasq
 # install_mysql ()			Function to install MySQL
@@ -46,6 +47,29 @@ version="1.0"							# Script Version
 # Functions / Procedures
 # +---------------------------------------------------+
 
+# Fix Package List
+#Error: Hash Sum Mismatch OR No Package Available to Install
+function fix_apt () {
+clear 2>/dev/null
+echo "------------------------------------------------------------------------------";
+echo "	F I X  A P T   P A C K A G E   L I S T";
+echo "------------------------------------------------------------------------------";
+
+# **START** Fix APT list
+echo "We are removing corrupt content from /var/lib/apt/lists directory";
+echo "";
+rm -fR /var/lib/apt/lists/*
+
+echo "";
+echo "We are now going to re-build the APT database";
+apt-get update
+
+echo "";
+echo "Finished fixing APT";
+sleep 8
+# **END** Fix APT list
+}
+
 # Base OS Package Install
 function install_base () {
 clear 2>/dev/null
@@ -56,6 +80,7 @@ echo "--------------------------------------------------------------------------
 # **START** Base OS Packages
 echo "We are now going to install the base packages for the OS."
 echo ""
+fix_apt
 apt-get install binutils cpp fetchmail flex gcc libarchive-zip-perl libc6-dev libcompress-raw-zlib-perl libdb4.8-dev libpcre3 libpopt-dev lynx m4 make ncftp nmap openssl perl perl-modules unzip zip zlib1g-dev autoconf automake1.9 libtool bison autotools-dev g++ build-essential telnet wget gawk -y
 echo ""
 echo "Base packages installed."
@@ -949,6 +974,7 @@ echo "--------------------------------------------------------------------------
 echo "	P H A S E   1";
 echo "------------------------------------------------------------------------------";
 
+fix_apt
 install_webmin
 install_dnsmasq
 install_mysql
@@ -1062,6 +1088,9 @@ menu_advanced() {
 	echo "i) Configure MailScanner"
 	echo "j) Install Baruwa"
 	echo " "
+	echo "y) Fix APT"
+	echo " "
+	echo " "
 	echo "x) Exit"
 }
 
@@ -1104,6 +1133,7 @@ read_advanced() {
 		h) install_spamassassin ;;
 		i) configure_mailscanner ;;
 		j) install_baruwa ;;
+		y) fix_apt ;;
 		x) exit 0 ;;
 		*) echo -e "Error \"$choice\" is not an option..." && sleep 2
 	esac
