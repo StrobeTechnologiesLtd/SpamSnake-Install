@@ -124,5 +124,13 @@ Phase 4 Setup
 -------------
 Note:		If you are not in the snake setup menu launch it with ./snakesetup.sh
 
-1.	Choose Option k
+1.	Choose Option e
 2.	During the install you will be asked for the external server name (eg. spam.strobe-it.co.uk)
+3.	Edit and import FuzzyOCR MySQL script
+
+
+Phase 5 Setup
+-------------
+Note:		If you are not in the snake setup menu launch it with ./snakesetup.sh
+
+1.	Choose Option f
