@@ -140,3 +140,4 @@ Phase 6
 -------
 Login to the server via Webmin
 Run all updates on the server
+Create All Cron Jobs
