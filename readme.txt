@@ -2,8 +2,8 @@ Strobe Technologies Ltd
 SpamSnake Installer
 =======================
 =======================
-Version:	V1.3
-Date:		12/01/2015
+Version:	V1.4
+Date:		13/01/2015
 Snake Ver:	V1.12.2.2
 =======================
 =======================
@@ -16,6 +16,6 @@ Database Server:		MySQL v5.5.28
 Mail Server:			Postfix v2.9.3
 Caching DNS Server:		Dnsmasq 2.59
 Filter(s):				MailScanner v4.84.6-1 / Spamassassin v3.3.2-2
-Frontend(s):			Baruwa v1.1.2-4sn / Webmin 1.700
+Frontend(s):			Baruwa v1.1.2-4sn / Webmin 1.730
 -----------------------
 =======================

@@ -134,3 +134,9 @@ Phase 5 Setup
 Note:		If you are not in the snake setup menu launch it with ./snakesetup.sh
 
 1.	Choose Option f
+
+
+Phase 6
+-------
+Login to the server via Webmin
+Run all updates on the server
