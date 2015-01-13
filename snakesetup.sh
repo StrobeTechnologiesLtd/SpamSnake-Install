@@ -17,8 +17,8 @@
 # Version Tracking
 # +---------------------------------------------------+
 
-date="12-01-2015"						# Last Updated On
-version="1.3"							# Script Version
+date="13-01-2015"						# Last Updated On
+version="1.4"							# Script Version
 #binhome="/home/baruwa/px/bin/"			# Path to bin
 
 
@@ -971,14 +971,19 @@ sed -i "/^Is Definitely Spam =/ c\Is Definitely Spam = &BaruwaBlacklist" /etc/Ma
 sed -i "/^Required SpamAssassin Score =/ c\Required SpamAssassin Score = &BaruwaLowScore" /etc/MailScanner/MailScanner.conf
 sed -i "/^High SpamAssassin Score =/ c\High SpamAssassin Score = &BaruwaHighScore" /etc/MailScanner/MailScanner.conf
 sed -i "/^Always Looked Up Last =/ c\Always Looked Up Last = &BaruwaSQL" /etc/MailScanner/MailScanner.conf
+
 sed -i "/^Quarantine User =/ c\Quarantine User = celeryd" /opt/MailScanner/etc/conf.d/baruwa.conf
 sed -i "/^Inline HTML Signature =/ c\#Inline HTML Signature = htmlsigs.customize" /opt/MailScanner/etc/conf.d/baruwa.conf
 sed -i "/^Inline Text Signature =/ c\#Inline Text Signature = textsigs.customize" /opt/MailScanner/etc/conf.d/baruwa.conf
 sed -i "/^Signature Image Filename =/ c\#Signature Image Filename = sigimgfiles.customize" /opt/MailScanner/etc/conf.d/baruwa.conf
 sed -i "/^Signature Image <img> Filename =/ c\#Signature Image <img> Filename = sigimgs.customize" /opt/MailScanner/etc/conf.d/baruwa.conf
+sed -i "/^DB Password =/ c\DB Password = 5n@keSpam" /opt/MailScanner/etc/conf.d/baruwa.conf
 
 usermod -a -G celeryd clamav
 chgrp -R celeryd /var/spool/MailScanner/quarantine
+
+#Edit /etc/init.d/mailscanner
+# to include PIDFILE etc Page 27 of guide
 
 echo ""
 echo "Finished doing Adding Additional Settings to Baruwa."
@@ -1905,7 +1910,7 @@ sleep 8
 }
 
 
-# Firehol Package Install
+# Firehol Package Install  ##PROBLEM function
 function install_firehol () {
 clear 2>/dev/null
 echo "------------------------------------------------------------------------------";
@@ -2163,7 +2168,110 @@ echo "--------------------------------------------------------------------------
 echo "We are about to Brand SpamSnake."
 echo ""
 
-#commands
+#Files for /usr/share/pyshared/baruwa/static/imgs/css
+cd /usr/share/pyshared/baruwa/static/imgs/css
+mv arrow.gif arrow-bak.gif
+wget www.strobe-it.co.uk/SIT/SpamSnake/Branding/usr/share/pyshared/baruwa/static/imgs/css/arrow.gif
+mv bg.gif bg-bak.gif
+wget www.strobe-it.co.uk/SIT/SpamSnake/Branding/usr/share/pyshared/baruwa/static/imgs/css/bg.gif
+mv logo.jpg logo-bak.jpg
+wget www.strobe-it.co.uk/SIT/SpamSnake/Branding/usr/share/pyshared/baruwa/static/imgs/css/logo.jpg
+mv search_btn.gif search_btn-bak.gif
+wget www.strobe-it.co.uk/SIT/SpamSnake/Branding/usr/share/pyshared/baruwa/static/imgs/css/search_btn.gif
+mv tab_left.gif tab_left-bak.gif
+wget www.strobe-it.co.uk/SIT/SpamSnake/Branding/usr/share/pyshared/baruwa/static/imgs/css/tab_left.gif
+mv tab_right.gif tab_right-bak.gif
+wget www.strobe-it.co.uk/SIT/SpamSnake/Branding/usr/share/pyshared/baruwa/static/imgs/css/tab_right.gif
+mv top_curb.gif top_curb-bak.gif
+wget www.strobe-it.co.uk/SIT/SpamSnake/Branding/usr/share/pyshared/baruwa/static/imgs/css/top_curb.gif
+wget www.strobe-it.co.uk/SIT/SpamSnake/Branding/usr/share/pyshared/baruwa/static/imgs/css/strobe_logo.png
+
+#Files for /usr/share/pyshared/baruwa/static/css
+cd /usr/share/pyshared/baruwa/static/css
+mv style.css style-bak.css
+wget www.strobe-it.co.uk/SIT/SpamSnake/Branding/usr/share/pyshared/baruwa/static/css/style.css
+
+#Files for /usr/share/pyshared/baruwa/templates
+cd /usr/share/pyshared/baruwa/templates
+mv base.html base-bak.html
+wget www.strobe-it.co.uk/SIT/SpamSnake/Branding/usr/share/pyshared/baruwa/templates/base.html
+
+#Files for /usr/share/pyshared/baruwa/templates/accounts
+cd /usr/share/pyshared/baruwa/templates/accounts
+mv login.html login-bak.html
+wget www.strobe-it.co.uk/SIT/SpamSnake/Branding/usr/share/pyshared/baruwa/templates/accounts/login.html
+mv pw_reset_email.txt pw_reset_email-bak.txt
+wget www.strobe-it.co.uk/SIT/SpamSnake/Branding/usr/share/pyshared/baruwa/templates/accounts/pw_reset_email.txt
+
+#Files for /usr/share/pyshared/baruwa/templates/reports
+cd /usr/share/pyshared/baruwa/templates/reports
+mv pdf_report.txt pdf_report-bak.txt
+wget www.strobe-it.co.uk/SIT/SpamSnake/Branding/usr/share/pyshared/baruwa/templates/reports/pdf_report.txt
+
+#Files for /usr/share/pyshared/baruwa/templates/messages
+cd /usr/share/pyshared/baruwa/templates/messages
+mv quarantine_report.html quarantine_report-bak.html
+wget www.strobe-it.co.uk/SIT/SpamSnake/Branding/usr/share/pyshared/baruwa/templates/messages/quarantine_report.html
+mv quarantine_report_text.html quarantine_report_text-bak.html
+wget www.strobe-it.co.uk/SIT/SpamSnake/Branding/usr/share/pyshared/baruwa/templates/messages/quarantine_report_text.html
+
+#Files for /opt/MailScanner-4.84.6-1/etc/reports/en/
+cd /opt/MailScanner-4.84.6-1/etc/reports/en/
+mv deleted.content.message.txt deleted.content.message-bak.txt
+mv deleted.filename.message.txt deleted.filename.message-bak.txt
+mv deleted.size.message.txt deleted.size.message-bak.txt
+mv deleted.virus.message.txt deleted.virus.message-bak.txt
+mv disinfected.report.txt disinfected.report-bak.txt
+mv inline.sig.html inline.sig-bak.html
+mv inline.sig.txt inline.sig-bak.txt
+mv inline.spam.warning.txt inline.spam.warning-bak.txt
+mv inline.warning.html inline.warning-bak.html
+mv inline.warning.txt inline.warning-bak.txt
+mv languages.conf languages-bak.conf
+mv recipient.mcp.report.txt recipient.mcp.report-bak.txt
+mv recipient.spam.report.txt recipient.spam.report-bak.txt
+mv rejection.report.txt rejection.report-bak.txt
+mv sender.content.report.txt sender.content.report-bak.txt
+mv sender.error.report.txt sender.error.report-bak.txt
+mv sender.filename.report.txt sender.filename.report-bak.txt
+mv sender.mcp.report.txt sender.mcp.report-bak.txt
+mv sender.size.report.txt sender.size.report-bak.txt
+mv sender.spam.rbl.report.txt sender.spam.rbl.report-bak.txt
+mv sender.spam.report.txt sender.spam.report-bak.txt
+mv sender.spam.sa.report.txt sender.spam.sa.report-bak.txt
+mv sender.virus.report.txt sender.virus.report-bak.txt
+mv stored.content.message.txt stored.content.message-bak.txt
+mv stored.filename.message.txt stored.filename.message-bak.txt
+mv stored.size.message.txt stored.size.message-bak.txt
+mv stored.virus.message.txt stored.virus.message-bak.txt
+
+wget www.strobe-it.co.uk/SIT/SpamSnake/Branding/opt/MailScanner-4.84.6-1/etc/reports/en/deleted.content.message.txt
+wget www.strobe-it.co.uk/SIT/SpamSnake/Branding/opt/MailScanner-4.84.6-1/etc/reports/en/deleted.filename.message.txt
+wget www.strobe-it.co.uk/SIT/SpamSnake/Branding/opt/MailScanner-4.84.6-1/etc/reports/en/deleted.size.message.txt
+wget www.strobe-it.co.uk/SIT/SpamSnake/Branding/opt/MailScanner-4.84.6-1/etc/reports/en/deleted.virus.message.txt
+wget www.strobe-it.co.uk/SIT/SpamSnake/Branding/opt/MailScanner-4.84.6-1/etc/reports/en/disinfected.report.txt
+wget www.strobe-it.co.uk/SIT/SpamSnake/Branding/opt/MailScanner-4.84.6-1/etc/reports/en/inline.sig.html
+wget www.strobe-it.co.uk/SIT/SpamSnake/Branding/opt/MailScanner-4.84.6-1/etc/reports/en/inline.sig.txt
+wget www.strobe-it.co.uk/SIT/SpamSnake/Branding/opt/MailScanner-4.84.6-1/etc/reports/en/inline.spam.warning.txt
+wget www.strobe-it.co.uk/SIT/SpamSnake/Branding/opt/MailScanner-4.84.6-1/etc/reports/en/inline.warning.html
+wget www.strobe-it.co.uk/SIT/SpamSnake/Branding/opt/MailScanner-4.84.6-1/etc/reports/en/inline.warning.txt
+wget www.strobe-it.co.uk/SIT/SpamSnake/Branding/opt/MailScanner-4.84.6-1/etc/reports/en/languages.conf
+wget www.strobe-it.co.uk/SIT/SpamSnake/Branding/opt/MailScanner-4.84.6-1/etc/reports/en/recipient.mcp.report.txt
+wget www.strobe-it.co.uk/SIT/SpamSnake/Branding/opt/MailScanner-4.84.6-1/etc/reports/en/recipient.spam.report.txt
+wget www.strobe-it.co.uk/SIT/SpamSnake/Branding/opt/MailScanner-4.84.6-1/etc/reports/en/rejection.report.txt
+wget www.strobe-it.co.uk/SIT/SpamSnake/Branding/opt/MailScanner-4.84.6-1/etc/reports/en/sender.content.report.txt
+wget www.strobe-it.co.uk/SIT/SpamSnake/Branding/opt/MailScanner-4.84.6-1/etc/reports/en/sender.error.report.txt
+wget www.strobe-it.co.uk/SIT/SpamSnake/Branding/opt/MailScanner-4.84.6-1/etc/reports/en/sender.filename.report.txt
+wget www.strobe-it.co.uk/SIT/SpamSnake/Branding/opt/MailScanner-4.84.6-1/etc/reports/en/sender.mcp.report.txt
+wget www.strobe-it.co.uk/SIT/SpamSnake/Branding/opt/MailScanner-4.84.6-1/etc/reports/en/sender.size.report.txt
+wget www.strobe-it.co.uk/SIT/SpamSnake/Branding/opt/MailScanner-4.84.6-1/etc/reports/en/sender.spam.rbl.report.txt
+wget www.strobe-it.co.uk/SIT/SpamSnake/Branding/opt/MailScanner-4.84.6-1/etc/reports/en/sender.spam.report.txt
+wget www.strobe-it.co.uk/SIT/SpamSnake/Branding/opt/MailScanner-4.84.6-1/etc/reports/en/sender.spam.sa.report.txt
+wget www.strobe-it.co.uk/SIT/SpamSnake/Branding/opt/MailScanner-4.84.6-1/etc/reports/en/sender.virus.report.txt
+wget www.strobe-it.co.uk/SIT/SpamSnake/Branding/opt/MailScanner-4.84.6-1/etc/reports/en/stored.content.message.txt
+wget www.strobe-it.co.uk/SIT/SpamSnake/Branding/opt/MailScanner-4.84.6-1/etc/reports/en/stored.filename.message.txt
+wget www.strobe-it.co.uk/SIT/SpamSnake/Branding/opt/MailScanner-4.84.6-1/etc/reports/en/stored.size.message.txt
+wget www.strobe-it.co.uk/SIT/SpamSnake/Branding/opt/MailScanner-4.84.6-1/etc/reports/en/stored.virus.message.txt
 
 echo ""
 echo "Branded Successfully."
